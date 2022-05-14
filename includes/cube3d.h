@@ -28,6 +28,7 @@
 # define PI 3.1415926535
 # define m_speed 15
 # define r_speed (PI / 16)
+# define rotationfix (PI / 24)
 
 // used for mlx hooks
 

@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/14 20:41:20 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/14 22:23:03 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,10 @@ int	move_func(t_c3d_data *data, int dir)
 	return (0);
 }
 
-// simple maths einheitskreis sin cos
-
 int	turn_left(t_c3d_data *data)
 {
 	data->p_a += r_speed;
-	if (data->p_a > 2 * PI)
+	if (data->p_a >= 2 * PI)
 		data->p_a -= 2 * PI;
 	data->p_dx = cos(data->p_a) * m_speed;
 	data->p_dy = sin(data->p_a) * m_speed;
@@ -45,7 +43,7 @@ int	turn_left(t_c3d_data *data)
 int	turn_right(t_c3d_data *data)
 {
 	data->p_a -= r_speed;
-	if (data->p_a < 0)
+	if (data->p_a <= 0)
 		data->p_a += 2 * PI;
 	data->p_dx = cos(data->p_a) * m_speed;
 	data->p_dy = sin(data->p_a) * m_speed;
@@ -72,14 +70,14 @@ int	key_press(int key, t_c3d_data *data)
 	if (key == 2)
 		turn_left(data);
 	render_top_down_map(data);
-	printf("dir x = %lf dir y = %lf\n", data->p_dx, data->p_dy);
+	// printf("dir x = %lf dir y = %lf\n", data->p_dx, data->p_dy);
 	
 	
 	double x;
 	x = (data->p_dx * data->p_dx) + (data->p_dy * data->p_dy);
 	x = sqrt(x);
 	
-	printf("added together == %fd\n", x);
+	// printf("added together == %fd\n", x);
 	
 	
 	return (0);
@@ -98,35 +96,56 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 void	draw_rays(t_c3d_data *data)
 {
 	int r, mx, my, mp, dof;
-	double rx, ry, ra, xo,yo, ninvtan;
+	double rx, ry, xo,ra,yo, ninvtan;
 
 	ra = data->p_a;
-	
+	if (ra < rotationfix || ra >= 2 * PI - rotationfix)
+		ra = 0;
+	else if (ra > PI - rotationfix && ra < PI + rotationfix)
+		ra = PI;
 	r = 0;
 	while (r < 1)
 	{
 		dof = 0;
-		ninvtan = -1/tan(ra);
-		if (ra > PI)
+		if (ra != 0)
+			ninvtan = -1/tan(ra);
+		if (ra == (double) 0 || ra == (double) PI)
+		{
+			rx = data->p_x;
+			ry = data->p_y;
+			dof = 8;
+		}
+		else if (ra > PI)
 		{
 			ry = (((int)data->p_y>>6)<<6) -0.0001;
 			rx = (data->p_y - ry) * ninvtan + data->p_x;
 			yo = -64;
 			xo = -yo * ninvtan;
 		}
-		if (ra < PI)
+		else if (ra < PI)
 		{
 			ry = (((int)data->p_y>>6)<<6) +64;
 			rx = (data->p_y - ry) * ninvtan + data->p_x;
 			yo = 64;
 			xo = -yo * ninvtan;
 		}
-		if (ra == 0 || ra == PI)
-		{
-			rx = data->p_x;
-			ry = data->p_y;
-			dof = 8;
+		while(dof < 8)
+		{			
+			mx = (int) (rx) >> 6;
+			my = (int) (ry) >> 6;
+			if (my < 0 || mx < 0)
+				break ;
+			if (my < data->rows && mx < data->columns && data->map[my][mx] == '1')
+				dof = 8 ;
+			else
+			{
+				rx += xo;
+				ry += yo;
+				dof++;
+			}
 		}
+		if (ra != 0 && ra != PI)
+			draw_line(data->mlx, data->mlx_win, data->p_x, data->p_y, rx, ry, 0x0033CC00);
 		r++;
 	}
 }
@@ -180,8 +199,8 @@ int	render_top_down_map(t_c3d_data *data)
 	}
 	draw_player(data);
 	draw_rays(data);
-	draw_line(data->mlx, data->mlx_win, data->p_x, data->p_y,
-		data->p_x + (data->p_dx * 3), data->p_y + (data->p_dy * 3), 0x0033CC00);
+	// draw_line(data->mlx, data->mlx_win, data->p_x, data->p_y,
+	// 	data->p_x + (data->p_dx * 3), data->p_y + (data->p_dy * 3), 0x0033CC00);
 	return (0);
 }
 
@@ -270,7 +289,7 @@ void	cube3d_game(t_c3d_data *data)
 	top_down_wall(data);
 	top_down_free_tile(data);
 	render_top_down_map(data);
-	mlx_key_hook(data->mlx_win, key_press, data);
+	// mlx_key_hook(data->mlx_win, key_press, data);
 	mlx_hook(data->mlx_win, ON_DESTROY, 0, close_game, data);
 	mlx_hook(data->mlx_win, ON_KEYDOWN, 0, key_press, data);
 	mlx_loop(data->mlx);
