@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/14 18:47:16 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/14 20:41:20 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,19 +93,43 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
-// void	draw_rays()
-// {
-// 	int r, mx, my, mp, dof;
-// 	double rx, ry, ra, xo,yo, ;
-// 	r = 0;
-// 	while (r < 1)
-// 	{
-// 		dof = 0;
-		
-		
-// 		r++;
-// 	}
-// }
+// create array of doubles and ints and use enums to itterate through iut
+
+void	draw_rays(t_c3d_data *data)
+{
+	int r, mx, my, mp, dof;
+	double rx, ry, ra, xo,yo, ninvtan;
+
+	ra = data->p_a;
+	
+	r = 0;
+	while (r < 1)
+	{
+		dof = 0;
+		ninvtan = -1/tan(ra);
+		if (ra > PI)
+		{
+			ry = (((int)data->p_y>>6)<<6) -0.0001;
+			rx = (data->p_y - ry) * ninvtan + data->p_x;
+			yo = -64;
+			xo = -yo * ninvtan;
+		}
+		if (ra < PI)
+		{
+			ry = (((int)data->p_y>>6)<<6) +64;
+			rx = (data->p_y - ry) * ninvtan + data->p_x;
+			yo = 64;
+			xo = -yo * ninvtan;
+		}
+		if (ra == 0 || ra == PI)
+		{
+			rx = data->p_x;
+			ry = data->p_y;
+			dof = 8;
+		}
+		r++;
+	}
+}
 
 int	draw_player(t_c3d_data *data)
 {
@@ -147,14 +171,15 @@ int	render_top_down_map(t_c3d_data *data)
 		while (x < data->columns)
 		{
 			if (data->map[y][x] == '1')
-				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_w_img.img, x * 65- 1, y * 65);
+				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_w_img.img, (x * 65) - 1, (y * 65) - 1);
 			else if (data->map[y][x] == '0' || data->map[y][x] == 'S')
-				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_ft_img.img, x * 65, y * 65);
+				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_ft_img.img, (x * 65) - 1, (y * 65) - 1);
 			x++;
 		}
 		y++;
 	}
 	draw_player(data);
+	draw_rays(data);
 	draw_line(data->mlx, data->mlx_win, data->p_x, data->p_y,
 		data->p_x + (data->p_dx * 3), data->p_y + (data->p_dy * 3), 0x0033CC00);
 	return (0);
