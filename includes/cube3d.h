@@ -23,10 +23,23 @@
 # include <stdio.h>
 
 
+// used for rotation and movement calculation
 
 # define PI 3.1415926535
 # define m_speed 15
-# define r_speed 0.1
+# define r_speed (PI / 16)
+
+// used for mlx hooks
+
+enum {
+	ON_KEYDOWN = 2,
+	ON_KEYUP = 3,
+	ON_MOUSEDOWN = 4,
+	ON_MOUSEUP = 5,
+	ON_MOUSEMOVE = 6,
+	ON_EXPOSE = 12,
+	ON_DESTROY = 17
+};
 
 typedef struct	s_data {
 	void	*img;
@@ -55,9 +68,15 @@ typedef struct s_c3d_data
 
 }	t_c3d_data;
 
+void	cube3d_game(t_c3d_data *data);
+int	render_top_down_map(t_c3d_data *data);
 
 
 
+
+//testing funcitons
+
+int draw_line(void *mlx, void *win, int beginX, int beginY, int endX, int endY, int color);
 
 
 #endif

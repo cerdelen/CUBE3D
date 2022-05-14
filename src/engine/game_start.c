@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/14 16:20:06 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/14 18:40:22 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,26 +65,21 @@ int	key_press(int key, t_c3d_data *data)
 	if (key == 13)
 		move_func(data, 1);
 	if (key == 0)
-		turn_left(data);
+		turn_right(data);
+		
 	if (key == 1)
 		move_func(data, -1);
 	if (key == 2)
-		turn_right(data);
+		turn_left(data);
 	render_top_down_map(data);
 	printf("dir x = %lf dir y = %lf\n", data->p_dx, data->p_dy);
 	
 	
-	int x;
-	if (data->p_dx < 0 && data->p_dy < 0)
-		x = 0 - (data->p_dx + data->p_dy);
-	if (data->p_dx > 0 && data->p_dy > 0)
-		x = data->p_dx + data->p_dy;
-	if (data->p_dx < 0 && data->p_dy > 0)
-		x = data->p_dy - data->p_dx;
-	if (data->p_dx > 0 && data->p_dy < 0)
-		x = data->p_dx - data->p_dy;
+	double x;
+	x = (data->p_dx * data->p_dx) + (data->p_dy * data->p_dy);
+	x = sqrt(x);
 	
-	printf("added together == %d\n", x);
+	printf("added together == %fd\n", x);
 	
 	
 	return (0);
@@ -97,6 +92,20 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
 	*(unsigned int*)dst = color;
 }
+
+// void	draw_rays()
+// {
+// 	int r, mx, my, mp, dof;
+// 	double rx, ry, ra, xo,yo, ;
+// 	r = 0;
+// 	while (r < 1)
+// 	{
+// 		dof = 0;
+		
+		
+// 		r++;
+// 	}
+// }
 
 int	draw_player(t_c3d_data *data)
 {
@@ -237,6 +246,7 @@ void	cube3d_game(t_c3d_data *data)
 	top_down_free_tile(data);
 	render_top_down_map(data);
 	mlx_key_hook(data->mlx_win, key_press, data);
-	mlx_hook(data->mlx_win, 17, 0, close_game, data);
+	mlx_hook(data->mlx_win, ON_DESTROY, 0, close_game, data);
+	mlx_hook(data->mlx_win, ON_KEYDOWN, 0, key_press, data);
 	mlx_loop(data->mlx);
 }
