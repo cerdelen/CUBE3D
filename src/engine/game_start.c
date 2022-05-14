@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/14 18:40:22 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/14 18:47:16 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	close_game(t_c3d_data *data)
 
 int	move_func(t_c3d_data *data, int dir)
 {
-	if (data->map[(int)((data->p_y + (data->p_dy * dir)) / 100)][(int)((data->p_x + (data->p_dx * dir)) / 100)] != '1')
+	if (data->map[(int)((data->p_y + (data->p_dy * dir)) / 64)][(int)((data->p_x + (data->p_dx * dir)) / 64)] != '1')
 	{
 		data->p_x += data->p_dx * dir;
 		data->p_y += data->p_dy * dir;
@@ -147,9 +147,9 @@ int	render_top_down_map(t_c3d_data *data)
 		while (x < data->columns)
 		{
 			if (data->map[y][x] == '1')
-				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_w_img.img, x * 101, y * 101);
+				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_w_img.img, x * 65- 1, y * 65);
 			else if (data->map[y][x] == '0' || data->map[y][x] == 'S')
-				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_ft_img.img, x * 101, y * 101);
+				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_ft_img.img, x * 65, y * 65);
 			x++;
 		}
 		y++;
@@ -168,16 +168,16 @@ int	top_down_background(t_c3d_data *data)
 	int	y;
 
 	data->td_bg_img.img = mlx_new_image(data->mlx,
-			data->columns * 101, data->rows * 101);
+			(data->columns * 65) - 1, (data->rows * 65) - 1);
 	data->td_bg_img.addr = mlx_get_data_addr(data->td_bg_img.img,
 			&data->td_bg_img.bits_per_pixel,
 			&data->td_bg_img.line_length,
 			&data->td_bg_img.endian);
 	x = 0;
-	while (x < data->columns * 101)
+	while (x < (data->columns * 65) - 1)
 	{
 		y = 0;
-		while (y < data->rows * 101)
+		while (y < (data->rows * 65) - 1)
 		{
 			my_mlx_pixel_put(&data->td_bg_img, x, y, 0x00999999);
 			y++;
@@ -193,16 +193,16 @@ int	top_down_free_tile(t_c3d_data *data)
 	int	y;
 
 	data->td_ft_img.img = mlx_new_image(data->mlx,
-			100, 100);
+			64, 64);
 	data->td_ft_img.addr = mlx_get_data_addr(data->td_ft_img.img,
 			&data->td_ft_img.bits_per_pixel,
 			&data->td_ft_img.line_length,
 			&data->td_ft_img.endian);
 	x = 0;
-	while (x < 100)
+	while (x < 64)
 	{
 		y = 0;
-		while (y < 100)
+		while (y < 64)
 		{
 			my_mlx_pixel_put(&data->td_ft_img, x, y, 0x006E4F4F);
 			y++;
@@ -218,16 +218,16 @@ int	top_down_wall(t_c3d_data *data)
 	int	y;
 
 	data->td_w_img.img = mlx_new_image(data->mlx,
-			100, 100);
+			64, 64);
 	data->td_w_img.addr = mlx_get_data_addr(data->td_w_img.img,
 			&data->td_w_img.bits_per_pixel,
 			&data->td_w_img.line_length,
 			&data->td_w_img.endian);
 	x = 0;
-	while (x < 100)
+	while (x < 64)
 	{
 		y = 0;
-		while (y < 100)
+		while (y < 64)
 		{
 			my_mlx_pixel_put(&data->td_w_img, x, y, 0);
 			y++;
@@ -240,7 +240,7 @@ int	top_down_wall(t_c3d_data *data)
 void	cube3d_game(t_c3d_data *data)
 {
 	data->mlx = mlx_init();
-	data->mlx_win = mlx_new_window(data->mlx, data->columns * 101, data->rows * 101, "CUBE3D");
+	data->mlx_win = mlx_new_window(data->mlx, data->columns * 65, (data->rows * 65) , "CUBE3D");
 	top_down_background(data);
 	top_down_wall(data);
 	top_down_free_tile(data);
