@@ -6,7 +6,7 @@
 #    By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/22 17:13:17 by Cerdelen          #+#    #+#              #
-#    Updated: 2022/05/12 19:30:21 by cerdelen         ###   ########.fr        #
+#    Updated: 2022/05/14 16:21:02 by cerdelen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,9 +63,10 @@ all:
 	@echo "\033[92mGNL successfully compiled!\033[0m"
 
 clean:
-	$(RM) $(OBJS)
+	@$(RM) $(OBJS)
 
 fclean: clean
-	$(RM) $(NAME)
+	@$(RM) $(NAME)
+	@echo "\033[91mGNL successfully cleaned!\033[91m"
 
 re: fclean all

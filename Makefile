@@ -1,7 +1,7 @@
 NAME				=	cube3d
 
-SRC_INPUT_MANAGMENT	=	src/initialize_struct.c\
-						src/game_start.c\
+SRC_INPUT_MANAGMENT	=	src/prep/initialize_struct.c\
+						src/engine/game_start.c\
 						#src/input_management.c
 
 SRC_TESTING			=	testing/draw_line.c
