@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/15 11:18:49 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/15 11:22:56 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ void	draw_rays(t_c3d_data *data)
 			xo = -yo * ninvtan;
 		}
 		while(dof < 8)
-		{			
+		{
 			mx = (int) (rx) >> 6;
 			my = (int) (ry) >> 6;
 			if (my < 0 || mx < 0)
