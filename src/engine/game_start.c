@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/14 22:23:03 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/15 11:18:49 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	draw_rays(t_c3d_data *data)
 		dof = 0;
 		if (ra != 0)
 			ninvtan = -1/tan(ra);
-		if (ra == (double) 0 || ra == (double) PI)
+		if (ra == 0 || ra == PI)
 		{
 			rx = data->p_x;
 			ry = data->p_y;

@@ -22,7 +22,6 @@
 
 # include <stdio.h>
 
-
 // used for rotation and movement calculation
 
 # define PI 3.1415926535
