@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/15 23:38:59 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/16 00:17:48 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,10 +74,10 @@ int	key_press(int key, t_c3d_data *data)
 	// printf("dir x = %lf dir y = %lf\n", data->p_dx, data->p_dy);
 	// draw_line(data->mlx, data->mlx_win, 0, 0, 100 ,100 , 0x0033CC00);
 	// printf("hello\n");
-	// mlx_put_image_to_window(data->mlx, data->mlx_win, data->f_p_view.img, 0, 0);
 	// draw_line()
 	mlx_clear_window(data->mlx, data->mlx_win);
 	draw_rays(data);
+	mlx_put_image_to_window(data->mlx, data->mlx_win, data->f_p_view.img, 0, 0);
 	
 	return (0);
 }
@@ -125,6 +125,8 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 
 // create array of doubles and ints and use enums to itterate through iut
 
+rightes ray different color for debugging
+
 void	draw_rays(t_c3d_data *data)
 {
 	int r, mx, my, mp, dof;
@@ -133,7 +135,12 @@ void	draw_rays(t_c3d_data *data)
 	// detect_horizontal_wall();
 	// detect_vertical_wall();
 	
-	// data->f_p_view.img = mlx_new_image(data->mlx, WINDOW_W, WINDOW_H);
+	data->f_p_view.img = mlx_new_image(data->mlx, WINDOW_W, WINDOW_H);
+	data->f_p_view.addr = mlx_get_data_addr(data->f_p_view.img,
+			&data->f_p_view.bits_per_pixel,
+			&data->f_p_view.line_length,
+			&data->f_p_view.endian);
+	
 	r = - FOV / 2;
 	while (r <= FOV / 2)
 	{
@@ -197,7 +204,6 @@ void	draw_rays(t_c3d_data *data)
 		
 		dof = 0;
 		ntan = -tan(ra);
-		// if (ra == 0 || ra == PI)
 		if (ra == P2 || ra == P3)
 		{
 			rx = data->p_x;
@@ -242,53 +248,36 @@ void	draw_rays(t_c3d_data *data)
 		vdist = dist_2d(data->p_x, data->p_y, rx, ry);
 		hdist = dist_2d(data->p_x, data->p_y, trx, try);
 		if ((vdist == 0 || hdist < vdist) && hdist != 0) // horrizontalen
-		{
 			rdist = hdist;
-			// draw_line(data->mlx, data->mlx_win2, data->p_x, data->p_y, trx, try, 0x0033CC00);
-		}
 		else											//vertikalen
-		{
 			rdist = vdist;
-			// draw_line(data->mlx, data->mlx_win2, data->p_x, data->p_y, rx, ry, 0x0033CC00);
-		}
-		
-		// printf("r == %d\n", r);
-		// printf("%f %f %f %f %f\n", data->p_x, data->p_y, rx, ry, ra);
+		double ca = data->p_a - ra;
+		if (ca < 0)
+			ca += 2 * PI;
+		if (ca > 0)
+			ca -= 2 * PI;
+		rdist = rdist * cos(ca);
 		double lineH = (T_SIZE * WINDOW_H) / rdist;
 		if (lineH>WINDOW_H)							
 			lineH = WINDOW_H;
-		
 		double lineO = WINDOW_H / 2 - lineH/2;
-
-		
-											//line height
-			
+											//line height	
 		int i = 0;
 		while (i < (WINDOW_W / FOV))
 		{
-			draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, 0x0033CC00);
+			draw_line_img(&data->f_p_view, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, RED);
+			// draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, 0x0033CC00);
 			i++;
 		}
 		// draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * (WINDOW_W / FOV), lineO, (r + FOV / 2) * (WINDOW_W / FOV), lineH + lineO, 0x0033CC00);
-
 		r++;
 	}
-	// draw_line(data->mlx, data->mlx_win2, T_SIZE * data->columns + 100,0, T_SIZE * data->columns + 150, 50, 0x0033CC00);
-	// mlx_put_image_to_window(data->mlx, data->mlx_win2, data->td_p_img.img, T_SIZE * data->columns + 100, 300);
-	
-	// mlx_put_image_to_window(data->mlx, data->mlx_win2, data->f_p_view.img, T_SIZE * data->columns + 100, 0);
 }
  
 void	cube3d_game(t_c3d_data *data)
 {
 	data->mlx = mlx_init();
-	// data->mlx_win2 = mlx_new_window(data->mlx, (data->columns * T_SIZE) * 2, (data->rows * T_SIZE) , "CUBE3D2");
 	data->mlx_win = mlx_new_window(data->mlx, WINDOW_W, WINDOW_H , "CUBE3D");
-	// top_down_background(data);
-	// top_down_wall(data);
-	// top_down_free_tile(data);
-	// render_top_down_map(data);
-	// mlx_key_hook(data->mlx_win2, key_press, data);
 	mlx_hook(data->mlx_win, ON_DESTROY, 0, close_game, data);
 	mlx_hook(data->mlx_win, ON_KEYDOWN, 0, key_press, data);
 	mlx_loop(data->mlx);

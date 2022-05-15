@@ -32,7 +32,6 @@ int draw_line_img(t_data *img, int beginX, int beginY, int endX, int endY, int c
 	int 	pixels;
 	double 	pixelX;
 	double 	pixelY;
-	printf("%i %i %i %i\n",beginX,  beginY,  endX,  endY);
 
 	deltaX = endX - beginX;
 	deltaY = endY - beginY;
