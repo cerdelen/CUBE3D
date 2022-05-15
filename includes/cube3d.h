@@ -33,8 +33,8 @@
 # define FOV 60
 # define RAD PI / 180
 # define T_SIZE 64
-# define WINDOW_H 320
-# define WINDOW_W 480
+# define WINDOW_H 768
+# define WINDOW_W 1024
 # define RED 0x00FF0000
 # define GRE 0x0033CC00
 # define BRN 0x006E4F4F

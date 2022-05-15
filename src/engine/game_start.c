@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/15 19:56:24 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/15 20:00:52 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,7 +272,7 @@ void	draw_rays(t_c3d_data *data)
 			// draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * 8 + i, lineO, (r + FOV / 2) * 8 + i, lineH + lineO, 0x0033CC00);
 		// 	i++;
 		// }
-		draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * 8, lineO, (r + FOV / 2) * 8, lineH + lineO, 0x0033CC00);
+		draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * (WINDOW_W / FOV), lineO, (r + FOV / 2) * (WINDOW_W / FOV), lineH + lineO, 0x0033CC00);
 
 		r++;
 	}
