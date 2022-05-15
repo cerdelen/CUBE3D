@@ -24,3 +24,29 @@ int draw_line(void *mlx, void *win, int beginX, int beginY, int endX, int endY, 
 	}
 	return (0);
 }
+
+int draw_line_img(t_data *img, int beginX, int beginY, int endX, int endY, int color)
+{
+	double	deltaX;
+	double	deltaY;
+	int 	pixels;
+	double 	pixelX;
+	double 	pixelY;
+	printf("%i %i %i %i\n",beginX,  beginY,  endX,  endY);
+
+	deltaX = endX - beginX;
+	deltaY = endY - beginY;
+	pixels = sqrt((deltaX * deltaX) + (deltaY * deltaY));
+	pixelX = beginX;
+	pixelY = beginY;
+	deltaX /= pixels;
+	deltaY /= pixels;
+	while (pixels)
+	{
+		my_mlx_pixel_put(img, pixelX, pixelY, color);
+		pixelX += deltaX;
+		pixelY += deltaY;
+		--pixels;
+	}
+	return (0);
+}

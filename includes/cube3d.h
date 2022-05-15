@@ -30,8 +30,17 @@
 # define rotationfix (PI / 241)
 # define P2 PI / 2
 # define P3 3 * PI / 2
-# define FOV 16
+# define FOV 60
 # define RAD PI / 180
+# define T_SIZE 64
+# define WINDOW_H 320
+# define WINDOW_W 480
+# define RED 0x00FF0000
+# define GRE 0x0033CC00
+# define BRN 0x006E4F4F
+# define BLK 0
+
+
 // used for mlx hooks
 
 enum {
@@ -64,6 +73,8 @@ typedef struct s_c3d_data
 	double		p_a;
 	void		*mlx;
 	void		*mlx_win;
+	void		*mlx_win2;
+	t_data		f_p_view;
 	t_data		td_p_img;
 	t_data		td_bg_img;
 	t_data		td_ft_img;
@@ -79,7 +90,9 @@ int	render_top_down_map(t_c3d_data *data);
 
 //testing funcitons
 
-int draw_line(void *mlx, void *win, int beginX, int beginY, int endX, int endY, int color);
-
+int 	draw_line(void *mlx, void *win, int beginX, int beginY, int endX, int endY, int color);
+int		draw_line_img(t_data *data, int beginX, int beginY, int endX, int endY, int color);
+void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
+void	draw_rays(t_c3d_data *data);
 
 #endif

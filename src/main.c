@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 15:28:56 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/15 15:09:38 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/15 15:22:26 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ int main(int argc, char **argv)
 	data.map = testing_map();
 	data.rows = 15;
 	data.columns = 15;
-	data.p_x = 104;
-	data.p_y = 104;
+	data.p_x = 384;
+	data.p_y = 580;
 	data.p_a = 0;
 	data.p_dx = cos(data.p_a) * m_speed;
 	data.p_dy = sin(data.p_a) * m_speed;
