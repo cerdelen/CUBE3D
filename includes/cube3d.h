@@ -26,11 +26,12 @@
 
 # define PI 3.1415926535
 # define m_speed 15
-# define r_speed (PI / 16)
-# define rotationfix (PI / 24)
+# define r_speed (PI / 90)
+# define rotationfix (PI / 241)
 # define P2 PI / 2
 # define P3 3 * PI / 2
-
+# define FOV 16
+# define RAD PI / 180
 // used for mlx hooks
 
 enum {

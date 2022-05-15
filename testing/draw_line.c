@@ -4,9 +4,9 @@ int draw_line(void *mlx, void *win, int beginX, int beginY, int endX, int endY, 
 {
 	double	deltaX;
 	double	deltaY;
-	int pixels;
-	double pixelX;
-	double pixelY;
+	int 	pixels;
+	double 	pixelX;
+	double 	pixelY;
 
 	deltaX = endX - beginX;
 	deltaY = endY - beginY;
@@ -17,10 +17,10 @@ int draw_line(void *mlx, void *win, int beginX, int beginY, int endX, int endY, 
 	deltaY /= pixels;
 	while (pixels)
 	{
-    mlx_pixel_put(mlx, win, pixelX, pixelY, color);
-    pixelX += deltaX;
-    pixelY += deltaY;
-    --pixels;
+		mlx_pixel_put(mlx, win, pixelX, pixelY, color);
+		pixelX += deltaX;
+		pixelY += deltaY;
+		--pixels;
 	}
 	return (0);
 }

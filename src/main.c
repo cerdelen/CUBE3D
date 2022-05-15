@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 15:28:56 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/14 21:38:16 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/15 15:09:38 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 	data.columns = 15;
 	data.p_x = 104;
 	data.p_y = 104;
-	data.p_a = PI /2;
+	data.p_a = 0;
 	data.p_dx = cos(data.p_a) * m_speed;
 	data.p_dy = sin(data.p_a) * m_speed;
 	cube3d_game(&data);

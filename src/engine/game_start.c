@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/15 13:37:22 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/15 15:12:18 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,11 @@ bool	epsilon_function(double target, double patient, double offset)
 		return (true);
 	return (false);
 }
-double fix_rounding_errors(t_c3d_data *data)
+double fix_rounding_errors(double tra)
 {
 	double	ra;
 
-	ra = data->p_a;
+	ra = tra;
 	if (epsilon_function(0, ra, rotationfix) == true || epsilon_function(2 * PI, ra, rotationfix) == true)
 		ra = 0;
 	else if (epsilon_function(PI, ra, rotationfix) == true)
@@ -109,12 +109,8 @@ double	dist_2d(double s_x, double s_y, double e_x, double e_y)
 	double	a;
 	double	b;
 
-	a = s_x - e_x;
-	if (s_x < e_x)
-		a = e_x - s_x;
-	b = s_y - e_y;
-	if (s_y < e_y)
-		b = e_y - s_y;
+	a = fabs(s_x - e_x);
+	b = fabs(s_y - e_y);
 	return (sqrt((a * a)+(b * b)));
 }
 
@@ -137,10 +133,19 @@ void	draw_rays(t_c3d_data *data)
 
 	// detect_horizontal_wall();
 	// detect_vertical_wall();
-	ra = fix_rounding_errors(data);
-	r = 0;
-	while (r < 1)
+	
+	r = - FOV / 2;
+	while (r <= FOV / 2)
 	{
+
+		// horizontal rays
+		ra = data->p_a + (r * RAD);
+		if (ra < 0)
+			ra += 2 * PI;
+		if (ra > 2 * PI)
+			ra -= 2 * PI;
+		ra = fix_rounding_errors(ra);
+		printf("ra = %f\n", ra);
 		dof = 0;
 		if (ra != 0)
 			ninvtan = -1/tan(ra);
@@ -166,11 +171,17 @@ void	draw_rays(t_c3d_data *data)
 		}
 		while(dof < 8)
 		{
+			if (rx < 0 || ry < 0)
+			{
+				rx = data->p_x;
+				ry = data->p_y;
+				break ;
+			}
 			mx = (int) (rx) >> 6;
 			my = (int) (ry) >> 6;
-			if (my < 0 || mx < 0 || my > data->rows || mx > data->columns)
+			if (my <= 0 || mx <= 0 || my > data->rows || mx > data->columns)
 				break ;
-			if (my < data->rows && mx < data->columns && data->map[my][mx] == '1')
+			if (my < data->rows && mx < data->columns && my > 0 && mx > 0 && data->map[my][mx] == '1')
 				dof = 8 ;
 			else
 			{
@@ -181,19 +192,20 @@ void	draw_rays(t_c3d_data *data)
 		}
 		try = ry;
 		trx = rx;
+
+		//verticall rays
+		
 		dof = 0;
 		ntan = -tan(ra);
 		// if (ra == 0 || ra == PI)
 		if (ra == P2 || ra == P3)
 		{
-			printf("ra == 0 || ra == PI\n");
 			rx = data->p_x;
 			ry = data->p_y;
 			dof = 8;
 		}
 		else if (ra > P2 && ra < P3)
 		{
-			printf("ra > P2 && ra < P3\n");
 			rx = (((int)data->p_x>>6)<<6) -0.0001;
 			ry = (data->p_x - rx) * ntan + data->p_y;
 			xo = -64;
@@ -201,7 +213,6 @@ void	draw_rays(t_c3d_data *data)
 		}
 		else if (ra < P2 || ra > P3)
 		{
-			printf("ra < P2 || ra > P3\n");
 			rx = (((int)data->p_x>>6)<<6) +64;
 			ry = (data->p_x - rx) * ntan + data->p_y;
 			xo = 64;
@@ -209,11 +220,17 @@ void	draw_rays(t_c3d_data *data)
 		}
 		while(dof < 8)
 		{
+			if (rx < 0 || ry < 0)
+			{
+				rx = data->p_x;
+				ry = data->p_y;
+				break ;
+			}
 			mx = (int) (rx) >> 6;
 			my = (int) (ry) >> 6;
-			if (my < 0 || mx < 0 || my > data->rows || mx > data->columns)
+			if (my <= 0 || mx <= 0 || my > data->rows || mx > data->columns)
 				break ;
-			if (my < data->rows && mx < data->columns && data->map[my][mx] == '1')
+			if (my < data->rows && mx < data->columns && my > 0 && mx > 0 && data->map[my][mx] == '1')
 				dof = 8 ;
 			else
 			{
@@ -224,10 +241,20 @@ void	draw_rays(t_c3d_data *data)
 		}
 		vdist = dist_2d(data->p_x, data->p_y, rx, ry);
 		hdist = dist_2d(data->p_x, data->p_y, trx, try);
-		if ((vdist == 0 || hdist < vdist) && hdist != 0)
+		if ((vdist == 0 || hdist < vdist) && hdist != 0) // horrizontalen
+		{
+			printf("ir == %d\n", r);
+			printf("%f %f %f %f %f\n", data->p_x, data->p_y, trx, try, ra);
 			draw_line(data->mlx, data->mlx_win, data->p_x, data->p_y, trx, try, 0x0033CC00);
-		else
+		}
+		else											//vertikalen
+		{
+			printf("er == %d\n", r);
+			printf("%f %f %f %f %f\n", data->p_x, data->p_y, rx, ry, ra);
 			draw_line(data->mlx, data->mlx_win, data->p_x, data->p_y, rx, ry, 0x0033CC00);
+		}
+		
+		// printf("r == %d\n", r);
 		// printf("%f %f %f %f %f\n", data->p_x, data->p_y, rx, ry, ra);
 
 		r++;
@@ -274,9 +301,9 @@ int	render_top_down_map(t_c3d_data *data)
 		while (x < data->columns)
 		{
 			if (data->map[y][x] == '1')
-				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_w_img.img, (x * 65) - 1, (y * 65) - 1);
+				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_w_img.img, (x * 64), (y * 64));
 			else if (data->map[y][x] == '0' || data->map[y][x] == 'S')
-				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_ft_img.img, (x * 65) - 1, (y * 65) - 1);
+				mlx_put_image_to_window(data->mlx, data->mlx_win, data->td_ft_img.img, (x * 64), (y * 64));
 			x++;
 		}
 		y++;
@@ -296,16 +323,16 @@ int	top_down_background(t_c3d_data *data)
 	int	y;
 
 	data->td_bg_img.img = mlx_new_image(data->mlx,
-			(data->columns * 65) - 1, (data->rows * 65) - 1);
+			(data->columns * 64), (data->rows * 64));
 	data->td_bg_img.addr = mlx_get_data_addr(data->td_bg_img.img,
 			&data->td_bg_img.bits_per_pixel,
 			&data->td_bg_img.line_length,
 			&data->td_bg_img.endian);
 	x = 0;
-	while (x < (data->columns * 65) - 1)
+	while (x < (data->columns * 64))
 	{
 		y = 0;
-		while (y < (data->rows * 65) - 1)
+		while (y < (data->rows * 64))
 		{
 			my_mlx_pixel_put(&data->td_bg_img, x, y, 0x00999999);
 			y++;
@@ -368,7 +395,7 @@ int	top_down_wall(t_c3d_data *data)
 void	cube3d_game(t_c3d_data *data)
 {
 	data->mlx = mlx_init();
-	data->mlx_win = mlx_new_window(data->mlx, data->columns * 65, (data->rows * 65) , "CUBE3D");
+	data->mlx_win = mlx_new_window(data->mlx, data->columns * 64, (data->rows * 64) , "CUBE3D");
 	top_down_background(data);
 	top_down_wall(data);
 	top_down_free_tile(data);
