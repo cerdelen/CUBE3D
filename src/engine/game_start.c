@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/15 11:22:56 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/15 13:37:22 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,43 @@ int	key_press(int key, t_c3d_data *data)
 	
 	return (0);
 }
+bool	epsilon_function(double target, double patient, double offset)
+{
+	if (patient < target + offset && patient > target - offset)
+		return (true);
+	return (false);
+}
+double fix_rounding_errors(t_c3d_data *data)
+{
+	double	ra;
+
+	ra = data->p_a;
+	if (epsilon_function(0, ra, rotationfix) == true || epsilon_function(2 * PI, ra, rotationfix) == true)
+		ra = 0;
+	else if (epsilon_function(PI, ra, rotationfix) == true)
+		ra = PI;
+	if (epsilon_function(P2, ra, rotationfix) == true)
+		ra = P2;
+	else if (epsilon_function(P3, ra, rotationfix) == true)
+		ra = P3;
+	return (ra);
+}
+
+double	dist_2d(double s_x, double s_y, double e_x, double e_y)
+{
+	double	a;
+	double	b;
+
+	a = s_x - e_x;
+	if (s_x < e_x)
+		a = e_x - s_x;
+	b = s_y - e_y;
+	if (s_y < e_y)
+		b = e_y - s_y;
+	return (sqrt((a * a)+(b * b)));
+}
+
+
 
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 {
@@ -96,13 +133,11 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 void	draw_rays(t_c3d_data *data)
 {
 	int r, mx, my, mp, dof;
-	double rx, ry, xo,ra,yo, ninvtan;
+	double rx, ry, xo, ra ,yo, ninvtan, ntan, trx, try, vdist, hdist;
 
-	ra = data->p_a;
-	if (ra < rotationfix || ra >= 2 * PI - rotationfix)
-		ra = 0;
-	else if (ra > PI - rotationfix && ra < PI + rotationfix)
-		ra = PI;
+	// detect_horizontal_wall();
+	// detect_vertical_wall();
+	ra = fix_rounding_errors(data);
 	r = 0;
 	while (r < 1)
 	{
@@ -133,7 +168,7 @@ void	draw_rays(t_c3d_data *data)
 		{
 			mx = (int) (rx) >> 6;
 			my = (int) (ry) >> 6;
-			if (my < 0 || mx < 0)
+			if (my < 0 || mx < 0 || my > data->rows || mx > data->columns)
 				break ;
 			if (my < data->rows && mx < data->columns && data->map[my][mx] == '1')
 				dof = 8 ;
@@ -144,8 +179,57 @@ void	draw_rays(t_c3d_data *data)
 				dof++;
 			}
 		}
-		if (ra != 0 && ra != PI)
+		try = ry;
+		trx = rx;
+		dof = 0;
+		ntan = -tan(ra);
+		// if (ra == 0 || ra == PI)
+		if (ra == P2 || ra == P3)
+		{
+			printf("ra == 0 || ra == PI\n");
+			rx = data->p_x;
+			ry = data->p_y;
+			dof = 8;
+		}
+		else if (ra > P2 && ra < P3)
+		{
+			printf("ra > P2 && ra < P3\n");
+			rx = (((int)data->p_x>>6)<<6) -0.0001;
+			ry = (data->p_x - rx) * ntan + data->p_y;
+			xo = -64;
+			yo = -xo * ntan;
+		}
+		else if (ra < P2 || ra > P3)
+		{
+			printf("ra < P2 || ra > P3\n");
+			rx = (((int)data->p_x>>6)<<6) +64;
+			ry = (data->p_x - rx) * ntan + data->p_y;
+			xo = 64;
+			yo = -xo * ntan;
+		}
+		while(dof < 8)
+		{
+			mx = (int) (rx) >> 6;
+			my = (int) (ry) >> 6;
+			if (my < 0 || mx < 0 || my > data->rows || mx > data->columns)
+				break ;
+			if (my < data->rows && mx < data->columns && data->map[my][mx] == '1')
+				dof = 8 ;
+			else
+			{
+				rx += xo;
+				ry += yo;
+				dof++;
+			}
+		}
+		vdist = dist_2d(data->p_x, data->p_y, rx, ry);
+		hdist = dist_2d(data->p_x, data->p_y, trx, try);
+		if ((vdist == 0 || hdist < vdist) && hdist != 0)
+			draw_line(data->mlx, data->mlx_win, data->p_x, data->p_y, trx, try, 0x0033CC00);
+		else
 			draw_line(data->mlx, data->mlx_win, data->p_x, data->p_y, rx, ry, 0x0033CC00);
+		// printf("%f %f %f %f %f\n", data->p_x, data->p_y, rx, ry, ra);
+
 		r++;
 	}
 }
