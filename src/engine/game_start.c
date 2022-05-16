@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/16 18:37:35 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/16 21:52:42 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,32 +22,83 @@ int	close_game(t_c3d_data *data)
 
 int	move_func(t_c3d_data *data, int dir)
 {
-	if (data->map[(int)((data->p_y + (data->p_dy * dir)) / T_SIZE)][(int)((data->p_x + (data->p_dx * dir)) / T_SIZE)] != '1')
+	double	dir2;
+	if (dir == 1  || dir == -1)
 	{
-		data->p_x += data->p_dx * dir;
-		data->p_y += data->p_dy * dir;
+		if (data->map[(int)((data->p_y + (data->p_dy * dir)) / T_SIZE)][(int)((data->p_x + (data->p_dx * dir)) / T_SIZE)] != '1')
+		{
+			data->p_x += data->p_dx * dir;
+			data->p_y += data->p_dy * dir;
+			return (0);
+		}
 	}
-	return (0);
+	else
+	{
+		if (dir == 0)
+		{
+			if (data->map[(int)((data->p_y + (data->p_dy * data->p_l_dy)) / T_SIZE)][(int)((data->p_x + (data->p_dx * data->p_l_dx)) / T_SIZE)] != '1')
+			{
+				data->p_x += data->p_l_dx;
+				data->p_y += data->p_l_dy;
+				return (0);
+			}
+		}
+		else
+		{
+			if (data->map[(int)((data->p_y + (data->p_dy * data->p_r_dy)) / T_SIZE)][(int)((data->p_x + (data->p_dx * data->p_r_dx)) / T_SIZE)] != '1')
+			{
+				data->p_x += data->p_r_dx;
+				data->p_y += data->p_r_dy;
+				return (0);
+			}
+			return (0);
+		}
+	}
 }
 
 int	turn_left(t_c3d_data *data)
 {
+	double	t_ra1;
+	double	t_ra2;
+
 	data->p_a += r_speed;
+	t_ra1 = data->p_a - P2;
+	t_ra2 = data->p_a + P2;
 	if (data->p_a >= 2 * PI)
 		data->p_a -= 2 * PI;
+	if (t_ra1 >= 2 * PI)
+		t_ra1 -= 2 * PI;
+	if (t_ra2 >= 2 * PI)
+		t_ra2 -= 2 * PI;
 	data->p_dx = cos(data->p_a) * m_speed;
 	data->p_dy = sin(data->p_a) * m_speed;
+	data->p_l_dx = cos(data->p_a + t_ra1) * m_speed;
+	data->p_l_dy = sin(data->p_a + t_ra1) * m_speed;
+	data->p_r_dx = cos(data->p_a + t_ra2) * m_speed;
+	data->p_r_dy = sin(data->p_a + t_ra2) * m_speed;
 	return (0);
 }
 
 int	turn_right(t_c3d_data *data)
 {
+	double	t_ra1;
+	double	t_ra2;
+
 	data->p_a -= r_speed;
-	if (data->p_a <= 0)
+	t_ra1 = data->p_a - P2;
+	t_ra2 = data->p_a + P2;
+	if (data->p_a <= 2 * PI)
 		data->p_a += 2 * PI;
+	if (t_ra1 <= 2 * PI)
+		t_ra1 += 2 * PI;
+	if (t_ra2 <= 2 * PI)
+		t_ra2 += 2 * PI;
 	data->p_dx = cos(data->p_a) * m_speed;
 	data->p_dy = sin(data->p_a) * m_speed;
-	return (0);
+	data->p_l_dx = cos(data->p_a + t_ra1) * m_speed;
+	data->p_l_dy = sin(data->p_a + t_ra1) * m_speed;
+	data->p_r_dx = cos(data->p_a + t_ra2) * m_speed;
+	data->p_r_dy = sin(data->p_a + t_ra2) * m_speed;
 }
 
 // int render_after_move(t_c3d_data *data)
@@ -60,18 +111,25 @@ int	turn_right(t_c3d_data *data)
 
 int	key_press(int key, t_c3d_data *data)
 {
+
 	if (key == 53)
 		return (close_game(data));
 	if (key == 13)
 		move_func(data, 1);
 	if (key == 0)
-		turn_right(data);
+		move_func(data, 0);
 	if (key == 1)
 		move_func(data, -1);
 	if (key == 2)
+		move_func(data, 2);
+	if (key == 124)
 		turn_left(data);
+	if (key == 123)
+		turn_right(data);
 	draw_rays(data);
 	mlx_put_image_to_window(data->mlx, data->mlx_win, data->f_p_view.img, 0, 0);
+	printf("key == %d\n", key);
+	printf("dx == %f ldx == %f rdx == %f \n", data->p_dx, data->p_l_dx,  data->p_r_dx);
 	return (0);
 }
 bool	epsilon_function(double target, double patient, double offset)
@@ -146,7 +204,7 @@ void	draw_rays(t_c3d_data *data)
 		{
 			rx = data->p_x;
 			ry = data->p_y;
-			dof = 8;
+			dof = MAX_DEPTH;
 		}
 		else if (ra > PI)
 		{
@@ -162,7 +220,7 @@ void	draw_rays(t_c3d_data *data)
 			yo = T_SIZE;
 			xo = -yo * ninvtan;
 		}
-		while(dof < 8)
+		while(dof < MAX_DEPTH)
 		{
 			if (rx < 0 || ry < 0)
 			{
@@ -175,7 +233,7 @@ void	draw_rays(t_c3d_data *data)
 			if (my <= 0 || mx <= 0 || my > data->rows || mx > data->columns)
 				break ;
 			if (my < data->rows && mx < data->columns && my > 0 && mx > 0 && data->map[my][mx] == '1')
-				dof = 8 ;
+				dof = MAX_DEPTH ;
 			else
 			{
 				rx += xo;
@@ -194,7 +252,7 @@ void	draw_rays(t_c3d_data *data)
 		{
 			rx = data->p_x;
 			ry = data->p_y;
-			dof = 8;
+			dof = MAX_DEPTH;
 		}
 		else if (ra > P2 && ra < P3)
 		{
@@ -210,7 +268,7 @@ void	draw_rays(t_c3d_data *data)
 			xo = T_SIZE;
 			yo = -xo * ntan;
 		}
-		while(dof < 8)
+		while(dof < MAX_DEPTH)
 		{
 			if (rx < 0 || ry < 0)
 			{
@@ -223,7 +281,7 @@ void	draw_rays(t_c3d_data *data)
 			if (my <= 0 || mx <= 0 || my > data->rows || mx > data->columns)
 				break ;
 			if (my < data->rows && mx < data->columns && my > 0 && mx > 0 && data->map[my][mx] == '1')
-				dof = 8 ;
+				dof = MAX_DEPTH ;
 			else
 			{
 				rx += xo;

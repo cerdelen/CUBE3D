@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 15:28:56 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/16 11:27:49 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/16 21:52:14 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,22 @@ char	**testing_map(void)
 	return (map);
 }
 
+void	init_move_deltas(t_c3d_data *data)
+{
+	double	t_ra1;
+	double	t_ra2;
+
+	data->p_a = 0;
+	t_ra1 = P3;
+	t_ra2 = P2;
+	data->p_dx = cos(data->p_a) * m_speed;
+	data->p_dy = sin(data->p_a) * m_speed;
+	data->p_l_dx = cos(data->p_a + t_ra1) * m_speed;
+	data->p_l_dy = sin(data->p_a + t_ra1) * m_speed;
+	data->p_r_dx = cos(data->p_a + t_ra2) * m_speed;
+	data->p_r_dy = sin(data->p_a + t_ra2) * m_speed;
+}
+
 int main(int argc, char **argv)
 {
 	t_c3d_data	data;
@@ -51,8 +67,7 @@ int main(int argc, char **argv)
 	data.p_x = 384;
 	data.p_y = 580;
 	data.p_a = 0;
-	data.p_dx = cos(data.p_a) * m_speed;
-	data.p_dy = sin(data.p_a) * m_speed;
+	init_move_deltas(&data);
 	data.floor_colour = BRN;
 	data.ceiling_colour = BLU;
 	

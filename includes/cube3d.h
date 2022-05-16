@@ -26,7 +26,7 @@
 
 # define PI 3.1415926535
 # define m_speed 15
-# define r_speed (PI / 90)
+# define r_speed (PI / 60)
 # define rotationfix (PI / 241)
 # define P2 PI / 2
 # define P3 3 * PI / 2
@@ -35,6 +35,7 @@
 # define T_SIZE 64
 # define WINDOW_H 768
 # define WINDOW_W 1024
+# define MAX_DEPTH 12
 # define RED 0x00FF0000
 # define GRE 0x0033CC00
 # define BRN 0x006E4F4F
@@ -74,6 +75,10 @@ typedef struct s_c3d_data
 	double		p_y;
 	double		p_dx;
 	double		p_dy;
+	double		p_l_dx;
+	double		p_l_dy;
+	double		p_r_dx;
+	double		p_r_dy;
 	double		p_a;
 	void		*mlx;
 	void		*mlx_win;
