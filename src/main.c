@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 15:28:56 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/15 22:04:37 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/16 11:27:49 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,8 @@ int main(int argc, char **argv)
 	data.p_a = 0;
 	data.p_dx = cos(data.p_a) * m_speed;
 	data.p_dy = sin(data.p_a) * m_speed;
+	data.floor_colour = BRN;
+	data.ceiling_colour = BLU;
+	
 	cube3d_game(&data);
 }

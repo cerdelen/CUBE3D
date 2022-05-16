@@ -30,7 +30,7 @@
 # define rotationfix (PI / 241)
 # define P2 PI / 2
 # define P3 3 * PI / 2
-# define FOV 60
+# define FOV 90
 # define RAD PI / 180
 # define T_SIZE 64
 # define WINDOW_H 768
@@ -38,7 +38,9 @@
 # define RED 0x00FF0000
 # define GRE 0x0033CC00
 # define BRN 0x006E4F4F
+# define BLU 0X000033FF
 # define BLK 0
+
 
 
 // used for mlx hooks
@@ -74,11 +76,15 @@ typedef struct s_c3d_data
 	void		*mlx;
 	void		*mlx_win;
 	void		*mlx_win2;
+	int			ceiling_colour;
+	int			floor_colour;
 	t_data		f_p_view;
-	t_data		td_p_img;
-	t_data		td_bg_img;
-	t_data		td_ft_img;
-	t_data		td_w_img;
+	t_data		floor;
+	t_data		ceiling;
+	// t_data		td_p_img;
+	// t_data		td_bg_img;
+	// t_data		td_ft_img;
+	// t_data		td_w_img;
 
 }	t_c3d_data;
 

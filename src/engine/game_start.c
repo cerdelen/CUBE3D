@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/16 00:17:48 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/16 12:07:56 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,11 +125,11 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 
 // create array of doubles and ints and use enums to itterate through iut
 
-rightes ray different color for debugging
+// rightes ray different color for debugging
 
 void	draw_rays(t_c3d_data *data)
 {
-	int r, mx, my, mp, dof;
+	int r, mx, my, mp, dof, colour;
 	double rx, ry, xo, ra ,yo, ninvtan, ntan, trx, try, vdist, hdist, rdist;
 
 	// detect_horizontal_wall();
@@ -248,9 +248,15 @@ void	draw_rays(t_c3d_data *data)
 		vdist = dist_2d(data->p_x, data->p_y, rx, ry);
 		hdist = dist_2d(data->p_x, data->p_y, trx, try);
 		if ((vdist == 0 || hdist < vdist) && hdist != 0) // horrizontalen
+		{
+			colour = RED;
 			rdist = hdist;
+		}	
 		else											//vertikalen
+		{
+			colour = GRE;
 			rdist = vdist;
+		}
 		double ca = data->p_a - ra;
 		if (ca < 0)
 			ca += 2 * PI;
@@ -265,7 +271,7 @@ void	draw_rays(t_c3d_data *data)
 		int i = 0;
 		while (i < (WINDOW_W / FOV))
 		{
-			draw_line_img(&data->f_p_view, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, RED);
+			draw_line_img(&data->f_p_view, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, colour);
 			// draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, 0x0033CC00);
 			i++;
 		}
@@ -274,10 +280,44 @@ void	draw_rays(t_c3d_data *data)
 	}
 }
  
-void	cube3d_game(t_c3d_data *data)
+
+void		fill_full_image(t_data img, int height, int width, int colour)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (i < height)
+	{
+		while (j < width)
+		{
+			my_
+		}
+		i++;
+	}
+}
+
+t_data		my_new_image(void *mlx)
+{
+	t_data	temp;
+
+	temp.img = mlx_new_image(mlx, WINDOW_W, WINDOW_H);
+	temp.addr = mlx_get_data_addr(temp.img,
+			&temp.bits_per_pixel,
+			&temp.line_length,
+			&temp.endian);
+	return (temp);
+}
+ 
+void		cube3d_game(t_c3d_data *data)
 {
 	data->mlx = mlx_init();
 	data->mlx_win = mlx_new_window(data->mlx, WINDOW_W, WINDOW_H , "CUBE3D");
+	data->f_p_view = my_new_image(data->mlx);
+	data->ceiling = my_new_image(data->mlx);
+	data->floor = my_new_image(data->mlx);
+	fill_full_image(data->ceiling, WINDOW_H, WINDOW_W, data->ceiling_colour);
+	fill_full_image(data->floor, WINDOW_H, WINDOW_W, data->floor_colour);
 	mlx_hook(data->mlx_win, ON_DESTROY, 0, close_game, data);
 	mlx_hook(data->mlx_win, ON_KEYDOWN, 0, key_press, data);
 	mlx_loop(data->mlx);
