@@ -40,7 +40,6 @@ int draw_line_img(t_data *img, int beginX, int beginY, int endX, int endY, int c
 	pixelY = beginY;
 	deltaX /= pixels;
 	deltaY /= pixels;
-	printf("HI XD\n");
 	while (pixels)
 	{
 		my_mlx_pixel_put(img, pixelX, pixelY, color);

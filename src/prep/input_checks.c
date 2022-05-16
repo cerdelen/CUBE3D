@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 16:08:52 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/14 17:09:06 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/16 18:11:36 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,14 +95,15 @@ char	**get_whole_file(int fd)
 bool	make_map_out_of_full_file(t_c3d_data *data)
 {
 	int	i;
+	int	j;
 
+	j = 0;
 	i = 0;
 	while (data->map[i] != NULL)
 	{
 		check_for_map_info(data->map, i);
 		i++;
 	}
-	
 }
 
 bool	input_map(t_c3d_data *data, int argc, char **argv)

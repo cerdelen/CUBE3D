@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/16 17:51:46 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/16 18:37:35 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,12 +235,20 @@ void	draw_rays(t_c3d_data *data)
 		hdist = dist_2d(data->p_x, data->p_y, trx, try);
 		if ((vdist == 0 || hdist < vdist) && hdist != 0) // horrizontalen
 		{
-			colour = RED;
+			printf("ra == %f\n", ra);
+			if (ra > PI)
+				colour = RED;							//NORTH
+			else
+				colour = PUR;							//SOUTH
 			rdist = hdist;
+			// colour = RED;
 		}	
 		else											//vertikalen
 		{
-			colour = GRE;
+			if (ra > P3 || ra < P2)
+				colour = TEL;							//EAST
+			else
+				colour = GRE;							//WEST
 			rdist = vdist;
 		}
 		double ca = data->p_a - ra;
@@ -254,28 +262,9 @@ void	draw_rays(t_c3d_data *data)
 			lineH = WINDOW_H;
 		double lineO = WINDOW_H / 2 - lineH/2;
 											//line height	
-		// int i = 0;							// i damit ich keine pixelreihen habe sondern balken
-		// while (i < (WINDOW_W / FOV))
-		// {								// erster r = 0		
-		// 	draw_line_img(&data->f_p_view, (r + FOV / 2) * (WINDOW_W / FOV) + i, 0, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, data->ceiling_colour);
-		// 	draw_line_img(&data->f_p_view, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, WINDOW_H, data->floor_colour);	
-		// 	draw_line_img(&data->f_p_view, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, colour);
-		// 	i++;
-		// }
-		// draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * (WINDOW_W / FOV), lineO, (r + FOV / 2) * (WINDOW_W / FOV), lineH + lineO, 0x0033CC00);
-
-		// r += 0.5;
-		printf("HELO r ==  %d  x_s ==  %d y_s == %f x_e == %d y_e == %f \n", r, r + WINDOW_W / 2, lineO, (r + WINDOW_W / 2), lineH + lineO);
 		draw_line_img(&data->f_p_view, (r + WINDOW_W / 2), 0, (r + WINDOW_W / 2), lineO, data->ceiling_colour);
-		printf("HELO1\n");
 		draw_line_img(&data->f_p_view, (r + WINDOW_W / 2), lineH + lineO, (r + WINDOW_W / 2), WINDOW_H, data->floor_colour);	
-		printf("HELO2\n");
 		draw_line_img(&data->f_p_view, (r + WINDOW_W / 2), lineO, (r + WINDOW_W / 2), lineH + lineO, colour);
-
-		
-		printf("HELO3\n");
-
-
 		r++;
 	}
 }

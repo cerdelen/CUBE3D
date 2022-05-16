@@ -39,6 +39,8 @@
 # define GRE 0x0033CC00
 # define BRN 0x006E4F4F
 # define BLU 0X000033FF
+# define TEL 0X0000FFFF
+# define PUR 0X0099004C
 # define BLK 0
 
 
