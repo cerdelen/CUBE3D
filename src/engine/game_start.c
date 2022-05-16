@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/16 12:07:56 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/16 15:22:29 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,15 +70,8 @@ int	key_press(int key, t_c3d_data *data)
 		move_func(data, -1);
 	if (key == 2)
 		turn_left(data);
-	// render_top_down_map(data);
-	// printf("dir x = %lf dir y = %lf\n", data->p_dx, data->p_dy);
-	// draw_line(data->mlx, data->mlx_win, 0, 0, 100 ,100 , 0x0033CC00);
-	// printf("hello\n");
-	// draw_line()
-	mlx_clear_window(data->mlx, data->mlx_win);
 	draw_rays(data);
 	mlx_put_image_to_window(data->mlx, data->mlx_win, data->f_p_view.img, 0, 0);
-	
 	return (0);
 }
 bool	epsilon_function(double target, double patient, double offset)
@@ -129,17 +122,10 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 
 void	draw_rays(t_c3d_data *data)
 {
-	int r, mx, my, mp, dof, colour;
+	int  r, mx, my, mp, dof, colour;
 	double rx, ry, xo, ra ,yo, ninvtan, ntan, trx, try, vdist, hdist, rdist;
 
-	// detect_horizontal_wall();
-	// detect_vertical_wall();
-	
-	data->f_p_view.img = mlx_new_image(data->mlx, WINDOW_W, WINDOW_H);
-	data->f_p_view.addr = mlx_get_data_addr(data->f_p_view.img,
-			&data->f_p_view.bits_per_pixel,
-			&data->f_p_view.line_length,
-			&data->f_p_view.endian);
+	data->f_p_view = my_new_image(data->mlx, WINDOW_W, WINDOW_H);
 	
 	r = - FOV / 2;
 	while (r <= FOV / 2)
@@ -260,7 +246,7 @@ void	draw_rays(t_c3d_data *data)
 		double ca = data->p_a - ra;
 		if (ca < 0)
 			ca += 2 * PI;
-		if (ca > 0)
+		if (ca > 2 * PI)
 			ca -= 2 * PI;
 		rdist = rdist * cos(ca);
 		double lineH = (T_SIZE * WINDOW_H) / rdist;
@@ -268,40 +254,45 @@ void	draw_rays(t_c3d_data *data)
 			lineH = WINDOW_H;
 		double lineO = WINDOW_H / 2 - lineH/2;
 											//line height	
-		int i = 0;
+		int i = 0;							// i damit ich keine pixelreihen habe sondern balken
 		while (i < (WINDOW_W / FOV))
-		{
+		{								// erster r = 0		
+			draw_line_img(&data->f_p_view, (r + FOV / 2) * (WINDOW_W / FOV) + i, 0, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, data->ceiling_colour);
+			draw_line_img(&data->f_p_view, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, WINDOW_H, data->floor_colour);	
 			draw_line_img(&data->f_p_view, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, colour);
-			// draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineO, (r + FOV / 2) * (WINDOW_W / FOV) + i, lineH + lineO, 0x0033CC00);
 			i++;
 		}
 		// draw_line(data->mlx, data->mlx_win, (r + FOV / 2) * (WINDOW_W / FOV), lineO, (r + FOV / 2) * (WINDOW_W / FOV), lineH + lineO, 0x0033CC00);
+
+		// r += 0.5;
 		r++;
 	}
 }
  
 
-void		fill_full_image(t_data img, int height, int width, int colour)
-{
-	int	i;
-	int	j;
+// void		fill_full_image(t_data img, int width, int height, int colour)
+// {
+// 	int	y;
+// 	int	x;
 
-	i = 0;
-	while (i < height)
-	{
-		while (j < width)
-		{
-			my_
-		}
-		i++;
-	}
-}
+// 	y = 0;
+// 	while (y < height)
+// 	{
+// 		x = 0;
+// 		while (x < width)
+// 		{
+// 			my_mlx_pixel_put(&img, x, y, colour);
+// 			x++;
+// 		}
+// 		y++;
+// 	}
+// }
 
-t_data		my_new_image(void *mlx)
+t_data		my_new_image(void *mlx, int width, int heigth)
 {
 	t_data	temp;
 
-	temp.img = mlx_new_image(mlx, WINDOW_W, WINDOW_H);
+	temp.img = mlx_new_image(mlx, width, heigth);
 	temp.addr = mlx_get_data_addr(temp.img,
 			&temp.bits_per_pixel,
 			&temp.line_length,
@@ -313,11 +304,9 @@ void		cube3d_game(t_c3d_data *data)
 {
 	data->mlx = mlx_init();
 	data->mlx_win = mlx_new_window(data->mlx, WINDOW_W, WINDOW_H , "CUBE3D");
-	data->f_p_view = my_new_image(data->mlx);
-	data->ceiling = my_new_image(data->mlx);
-	data->floor = my_new_image(data->mlx);
-	fill_full_image(data->ceiling, WINDOW_H, WINDOW_W, data->ceiling_colour);
-	fill_full_image(data->floor, WINDOW_H, WINDOW_W, data->floor_colour);
+	data->f_p_view = my_new_image(data->mlx, WINDOW_W, WINDOW_H);
+	draw_rays(data);
+	mlx_put_image_to_window(data->mlx, data->mlx_win, data->f_p_view.img, 0, 0);
 	mlx_hook(data->mlx_win, ON_DESTROY, 0, close_game, data);
 	mlx_hook(data->mlx_win, ON_KEYDOWN, 0, key_press, data);
 	mlx_loop(data->mlx);

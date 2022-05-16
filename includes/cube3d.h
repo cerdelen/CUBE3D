@@ -90,7 +90,7 @@ typedef struct s_c3d_data
 
 void	cube3d_game(t_c3d_data *data);
 int	render_top_down_map(t_c3d_data *data);
-
+t_data		my_new_image(void *mlx, int width, int heigth);
 
 
 
