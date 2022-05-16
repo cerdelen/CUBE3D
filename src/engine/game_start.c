@@ -6,7 +6,7 @@
 /*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 18:23:46 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/16 21:52:42 by cerdelen         ###   ########.fr       */
+/*   Updated: 2022/05/16 23:27:23 by cerdelen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	move_func(t_c3d_data *data, int dir)
 	{
 		if (dir == 0)
 		{
-			if (data->map[(int)((data->p_y + (data->p_dy * data->p_l_dy)) / T_SIZE)][(int)((data->p_x + (data->p_dx * data->p_l_dx)) / T_SIZE)] != '1')
+			if (data->map[(int)((data->p_y + data->p_l_dy) / T_SIZE)][(int)((data->p_x + data->p_l_dx) / T_SIZE)] != '1')
 			{
 				data->p_x += data->p_l_dx;
 				data->p_y += data->p_l_dy;
@@ -45,7 +45,7 @@ int	move_func(t_c3d_data *data, int dir)
 		}
 		else
 		{
-			if (data->map[(int)((data->p_y + (data->p_dy * data->p_r_dy)) / T_SIZE)][(int)((data->p_x + (data->p_dx * data->p_r_dx)) / T_SIZE)] != '1')
+			if (data->map[(int)((data->p_y + data->p_r_dy) / T_SIZE)][(int)(data->p_x +data->p_r_dx / T_SIZE)] != '1')
 			{
 				data->p_x += data->p_r_dx;
 				data->p_y += data->p_r_dy;
