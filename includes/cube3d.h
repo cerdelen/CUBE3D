@@ -31,7 +31,7 @@
 # define P2 PI / 2
 # define P3 3 * PI / 2
 # define FOV 90
-# define RAD PI / 180
+# define RAD PI / 2 / WINDOW_W
 # define T_SIZE 64
 # define WINDOW_H 768
 # define WINDOW_W 1024
