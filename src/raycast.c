@@ -187,17 +187,9 @@ static void	ray_caster(t_data *data, int dimension)
 	{
 		tmp = dir_rotation(data->player.dir, (-1 * FOV/2) + (ray_angle_diff * i));
 		dist = single_ray(data, tmp, dimension);
-
 		radiant_diff = acos(vec_dot(data->player.dir, tmp));
-		degree_diff = radiant_diff * 180 / M_PI;
-		if (i < 10 || i > RAY_COUNT - 10)
-		{
-			printf("%f diff   %f,  cos = %f \n", radiant_diff, degree_diff, cos(radiant_diff));
-		}
-		// printf("%f ressssss\n", cos(45 * M_PI / 180));
-		printf("orgi dis %f\n", dist);
-		dist = dist / cos(radiant_diff);
-		printf("new dis %f\n", dist);
+		// degree_diff = radiant_diff * 180 / M_PI;
+		dist = dist * cos(radiant_diff);
 		if (dimension == 3)
 			draw_wall_3d(data, i, dist);
 	}
