@@ -78,6 +78,7 @@ int		keypress(int key, t_data* data)
 	render(data);
 	return (0);
 }
+unsigned int	my_mlx_pixel_get(t_img *data, int x, int y);
 
 int main(int argc, char **argv)
 {
@@ -91,7 +92,11 @@ int main(int argc, char **argv)
 	mlx_hook(data.mlx_win, ON_KEYDOWN, 1L<<0, keypress, &data);
 	mlx_hook(data.mlx_win, ON_DESTROY, 0, closing, &data);
 	render(&data);
+	
 
-
+	// printf("%f res\n", degree);
+	// printf("%x lel\n", my_mlx_pixel_get(data.walls[EAST_WALL].img,0, 0));
+	// printf("%x lel\n", my_mlx_pixel_get(data.walls[EAST_WALL].img,0, 1));
+	// mlx_put_image_to_window(data.mlx, data.mlx_win, data.walls[SOUTH_WALL].img, 0, 0);
 	mlx_loop(data.mlx);
 }

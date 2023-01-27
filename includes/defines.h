@@ -21,10 +21,10 @@
 //window specs
 #define WIN_WIDTH_2d		1200
 #define WIN_HEIGTH_2d		1200
-#define WIN_WIDTH_3d		720
-#define WIN_HEIGTH_3d		480
-// #define WIN_WIDTH			WIN_WIDTH_3d
-// #define WIN_HEIGTH			WIN_HEIGTH_3d
+#define WIN_WIDTH_3d		1280
+#define WIN_HEIGTH_3d		720
+// #define WIN_WIDTH			WIN_WIDTH_2d
+// #define WIN_HEIGTH			WIN_HEIGTH_2d
 #define WIN_WIDTH			WIN_WIDTH_3d
 #define WIN_HEIGTH			WIN_HEIGTH_3d
 

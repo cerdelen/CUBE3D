@@ -37,12 +37,24 @@ static int		skip_nbrs(char *str, int skipping)
 
 static bool		init_texture(char *buf, t_wall_stats *texture, t_data *data)
 {
-	texture->img = mlx_xpm_file_to_image(data->mlx, buf + skip_whitespace(buf), &texture->width, &texture->height);
-	// printf("read some image, width = %i  height =  %i  %p\n", texture->width, texture->height, texture->img);
+	texture->img->img = mlx_xpm_file_to_image(data->mlx, buf + skip_whitespace(buf), &texture->width, &texture->height);
 	if(texture->img == NULL)
 		return (true);
+	texture->img->addr = mlx_get_data_addr(texture->img->img, &(texture->img->bits_per_pixel),
+				&(texture->img->line_length), &(texture->img->endian));
 	return (false);
 }
+
+
+// void	init_texture(t_data *data, t_texture *texture, char *path)
+// {
+// 	printf("wot\n");
+// 	texture->img->ptr = mlx_xpm_file_to_image(data->mlx, path, \
+// 						&texture->width, &texture->height);
+// 	texture->img->data = mlx_get_data_addr(texture->img->ptr, &texture->img->bpp, &texture->img->size_l, &texture->img->endian);
+// 	if (!texture->img->ptr)
+// 		errno(TEXTURE, path, data);
+// }
 
 static bool		invalid_value(int value)
 {

@@ -1,5 +1,5 @@
-NO ./textures/img1.xpm
 SO ./textures/image_2.xpm
+NO ./textures/img1.xpm
 WE ./textures/image_3.xpm
 EA ./textures/image_4.xpm
 C 250,0,0

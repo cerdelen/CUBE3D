@@ -57,7 +57,7 @@ static void		draw_walls(t_data *data)
 	}
 }
 
-static unsigned int	my_mlx_pixel_get(t_img *data, int x, int y)
+unsigned int	my_mlx_pixel_get(t_img *data, int x, int y)
 {
 	char	*dst;
 
@@ -68,31 +68,19 @@ static unsigned int	my_mlx_pixel_get(t_img *data, int x, int y)
 
 static void	draw_wall_3d(t_data *data, int x, double dist)
 {
-	t_vec	start;
-	t_vec	end;
 	double	wall_height = WIN_HEIGTH * TILE / dist;
 	double	wall_offset = (WIN_HEIGTH - wall_height) / 2;
 	double	texture_x_d;
 	int		texture_x;
 
-	printf("found wall %i", data->found_wall);
-	print_vec(data->intersection, "intersection");
 	if(data->found_wall == NORTH_WALL || data->found_wall == SOUTH_WALL)
-		texture_x_d = fmod(data->intersection.y, TILE);
-	else
 		texture_x_d = fmod(data->intersection.x, TILE);
+	else
+		texture_x_d = fmod(data->intersection.y, TILE);
 	texture_x =  (int)texture_x_d;
 	int		texture_y;
 	double	y_perc;
-
-
-	start.x = x;
-	end.x = x;
-	start.y = wall_offset;
-	end.y = wall_offset + wall_height;
-	// print_vec(start, "start in 3d");
-	// print_vec(start, "end in 3d");
-	printf("%i x\n", texture_x);
+	texture_x = (int)(data->walls[data->found_wall].width * texture_x_d / 100);
 	for (int y = 0; y < WIN_HEIGTH; y++)
 	{
 		if (y < wall_offset)
@@ -103,37 +91,113 @@ static void	draw_wall_3d(t_data *data, int x, double dist)
 		{
 			texture_y = y - wall_offset;
 			y_perc = (double)texture_y / wall_height;
-
-
-			// printf("%f y perc", y_perc);
-			
-			texture_y = data->walls[EAST_WALL].height * y_perc;
-
-			// printf(" and %i y text and %i x text", texture_y, texture_x);
-			// printf(" results in colour %x\n", my_mlx_pixel_get(data->walls[EAST_WALL].img, texture_x, texture_y));
-			// printf("%f y - walloff\n", (y - wall_offset));
-			// printf("%f y percentage \n", ((y - wall_offset) / data->walls[EAST_WALL].height * 100));
-			// texture_y = (int)(fmod(((y - wall_offset) / data->walls[EAST_WALL].height * 100), 100));
-
-			
-			// printf("%i text y\n", texture_y);
-			// my_mlx_pixel_put(&data->img, x, y, 0x26E809);
-			my_mlx_pixel_put(&data->img, x, y, my_mlx_pixel_get(data->walls[EAST_WALL].img, texture_x, texture_y));
+			texture_y = data->walls[data->found_wall].height * y_perc;
+			my_mlx_pixel_put(&data->img, x, y, my_mlx_pixel_get(data->walls[data->found_wall].img, texture_x, texture_y));
 		}
-		y++;
 	}
-	
-	// draw_line_img(&data->img, start, end, 0x26E809);
+}
+static int		find_quadrant(t_vec vec)
+{
+	if (vec.x > 0 && vec.y > 0)
+		return (1);
+	if (vec.x < 0 && vec.y > 0)
+		return (2);
+	if (vec.x < 0 && vec.y < 0)
+		return (3);
+	if (vec.x > 0 && vec.y < 0)
+		return (4);
+	return (1);
+
+}
+
+static double	calc_angle(t_vec dir)
+{
+	// double	angle;
+	// int		quadrant = find_quadrant(dir);
+
+	// printf("test atan %f\n", pow(tan(dir.y / dir.x), -1));
+	// if (quadrant == 1)
+	// 	angle = fabs(atan(dir.y / dir.x));
+	// if (quadrant == 2)
+	// 	angle = 180 - fabs(atan(dir.y / dir.x));
+	// if (quadrant == 3)
+	// 	angle = 180 + fabs(atan(dir.y / dir.x));
+	// if (quadrant == 4)
+	// 	angle = 360 - fabs(atan(dir.y / dir.x));
+	// return (angle);
+	double angle = atan2(dir.y, dir.x);
+	// double degree = angle * 180 / M_PI;
+	// if (degree < 0)
+	// {
+	// 	degree += 360;
+	// }
+	return (angle);
+}
+
+static t_vec	normalize_vec(t_vec vec)
+{
+	t_vec	out;
+	double length = sqrt(vec.x*vec.x + vec.y*vec.y);
+	out.x = vec.x/length;
+	out.y = vec.y/length;
+	return (out);
+}
+
+static double	vec_dot(t_vec one, t_vec two)
+{
+	t_vec	tmp1 = normalize_vec(one);
+	t_vec	tmp2 = normalize_vec(two);
+
+	// printf("normalize vec tmp1.x %f tmp1.y %f \n", tmp1.x, tmp1.y);
+	// printf("normalize vec tmp2.x %f tmp2.y %f \n", tmp2.x, tmp2.y);
+	return ((tmp1.x * tmp2.x) + (tmp1.y * tmp2.y));
 }
 
 static void	ray_caster(t_data *data, int dimension)
 {
-	double		ray_angle = ((double) FOV) / ((double)RAY_COUNT);
+	double		ray_angle_diff = ((double) FOV) / ((double)RAY_COUNT);
 	double		dist;
+	t_vec		tmp;
+	double		ray_angle;
+	double		player_angle;
+	double		dot;
+	double		gpt_angle;
 
+	// player_angle = calc_angle(data->player.dir);
+	// // printf("%f player ang\n", player_angle);
+
+	// for (int i = 0; i < RAY_COUNT; i++)
+	// {
+	// 	tmp = dir_rotation(data->player.dir, (-1 * FOV/2) + (ray_angle_diff * i));
+	// 	dist = single_ray(data, tmp, dimension);
+	// 	ray_angle = calc_angle(tmp);
+	// 	dot = vec_dot(tmp, data->player.dir);
+	// 	gpt_angle = acos(dot);
+	// 	printf("%f dist before\n", dist);
+	// 	printf("%f dist before, idk = %f, dot = %f\n", dist, gpt_angle, dot);
+	// 	dist = dist / cos(gpt_angle);
+	// 	printf("%f dist after\n", dist);
+	// 	if (dimension == 3)
+	// 		draw_wall_3d(data, i, dist);
+	// }
+
+	double		radiant_diff;
+	double		degree_diff;
 	for (int i = 0; i < RAY_COUNT; i++)
 	{
-		dist = single_ray(data, dir_rotation(data->player.dir, (-1 * FOV/2) + (ray_angle * i)), dimension);
+		tmp = dir_rotation(data->player.dir, (-1 * FOV/2) + (ray_angle_diff * i));
+		dist = single_ray(data, tmp, dimension);
+
+		radiant_diff = acos(vec_dot(data->player.dir, tmp));
+		degree_diff = radiant_diff * 180 / M_PI;
+		if (i < 10 || i > RAY_COUNT - 10)
+		{
+			printf("%f diff   %f,  cos = %f \n", radiant_diff, degree_diff, cos(radiant_diff));
+		}
+		// printf("%f ressssss\n", cos(45 * M_PI / 180));
+		printf("orgi dis %f\n", dist);
+		dist = dist / cos(radiant_diff);
+		printf("new dis %f\n", dist);
 		if (dimension == 3)
 			draw_wall_3d(data, i, dist);
 	}
