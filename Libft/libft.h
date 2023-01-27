@@ -15,8 +15,13 @@
 # define LIBFT_H
 
 # include <stdlib.h>
-
+# include <stdio.h>
 # include <unistd.h>
+# include <stdbool.h>
+
+#define BUFFER_SIZE 100
+
+// Original Libft Functions
 
 int			ft_atoi(const char *nptr);
 void		ft_bzero(void *s, size_t n);
@@ -55,6 +60,8 @@ void		ft_striteri(char *s, void (*f)(unsigned int, char*));
 void		print_2d_array(char	**arr, int fd);
 void		free_2d_array(char	**arr);
 
+// Linked List Functions
+
 typedef struct s_list
 {
 	void			*content;
@@ -70,5 +77,17 @@ void		ft_lstdelone(t_list *lst, void (*del)(void*));
 void		ft_lstclear(t_list **lst, void (*del)(void*));
 void		ft_lstiter(t_list *lst, void (*f)(void *));
 t_list		*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
+
+// GNL Functions
+
+char	*get_next_line(int fd);
+char	*appending(char *str1, char *str2);
+char	*get_line(char *str1, char **remainderarr, int fd, char *buff);
+char	*gnl_strchr(const char *s, int c);
+int		gnl_strlen(const char *s);
+void	*gnl_memcpy(void *dest, const void *src, size_t n);
+void	*gnl_memmove(void *dest, const void *src, size_t n);
+
+
 
 #endif

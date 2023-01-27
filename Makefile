@@ -1,54 +1,63 @@
-NAME				=	cube3d
-
-SRC_INPUT_MANAGMENT	=	src/prep/initialize_struct.c\
-						src/engine/game_start.c\
-						#src/input_management.c
-
-SRC_TESTING			=	testing/draw_line.c
-						
-
-MAIN_SRC = src/main.c
-
-LIB = libft.a
-
-LIB_PATH = Libft
-
-GNL = get_next_line.a
-
-GNL_PATH = get_next_line
-
-#FLAGS = -Wall -Werror -Wextra
-
-SPECIAL_FLAG = -Iincludes -g -Lmlx -lmlx -framework OpenGL -framework AppKit
-
-all: $(NAME)
-
-%.o: %.c
-	$(CC) -Imlx -c $< -o $@
-
-$(NAME): $(LIB) $(GNL)
-	@gcc $(FLAGS) $(MAIN_SRC) $(SRC_TESTING) $(SRC_INPUT_MANAGMENT) $(LIB_PATH)/$(LIB) $(GNL_PATH)/$(GNL) $(SPECIAL_FLAG) -o $(NAME)
-	@echo "\033[92mCUBE3D successfully compiled!\033[0m"
+CC 		=	gcc
+CFLAGS	=	#-Wall -Wextra -Werror -g -fsanitize=address
+debug	=	-g -fsanitize=address
+NAME	=	cub
+SRCS	=	./src/main.c \
+			./src/init.c \
+			./src/parsing.c \
+			./src/raycast.c \
+			./src/mlx_utils.c \
+			./src/math.c \
+			./src/raycasting.c \
+			
 
 
-$(GNL):
-	@$(MAKE) 50 -C $(GNL_PATH)
+OBJS	= $(SRCS:.c=.o)
 
-$(LIB):
-	@$(MAKE) -C $(LIB_PATH)
+LIBS	=	-framework OpenGL -framework AppKit
+MLXDIR	=	./mlx/
+MLXLIB	=	libmlx.a
+GNL_A	=	get_next_line/get_next_line.a
+LIBFT_A	=	Libft/libft.a
+
+all: LIBFT GNL cub
+
+submodule:
+	@git submodule init 
+	@git submodule update
+
+%.o : %.c
+# @echo "$(B_BLUE)Compiling: $(BLUE)$(notdir $<) 🔨$(NC)"
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@echo "\033[0;35m•\033[0m\c"
+
+banner:
+# @echo "\n${PURPLE}======== Cub3d ========$(NC)"
+
+mlx:
+# @echo "\n${BLUE}======== MLX ========${NC}"
+# @$(MAKE) -C $(MLXDIR)
+
+LIBFT:
+	@$(MAKE) -C Libft
+
+GNL:
+	@$(MAKE) -C get_next_line
+
+$(NAME): $(OBJS)
+	@$(CC) $(CFLAGS) $(debug) $(OBJS) $(GNL_A) $(LIBFT_A) $(MLXDIR)$(MLXLIB) $(FSAN) $(LIBS) -o $(NAME)
 
 clean:
-	@$(MAKE) clean -C $(LIB_PATH)
-	@$(MAKE) clean -C $(GNL_PATH)
+	@rm -f $(OBJS)
+#	@$(MAKE) -C Libft clean
+#	@$(MAKE) -C get_next_line clean
 
-	
-fclean:
-	@$(MAKE) fclean -C $(LIB_PATH)
-	@$(MAKE) fclean -C $(GNL_PATH)
-	@rm -f $(NAME) $(LIB_PATH)/$(LIB)
-	@echo "\033[91mCUBE3D successfully cleaned!\033[91m"
+fclean: clean
+	@rm -f $(NAME)
+#	@$(MAKE) -C Libft fclean
+#	@$(MAKE) -C get_next_line fclean
 
 re: fclean all
 
-# test:$(LIB_PATH)/$(LIB)
-# 	gcc $(FLAGS) $(SRC_TESTING) $(SRC_INPUT_MANAGMENT) $(LIB_PATH)/$(LIB)  $(SPECIAL_FLAG) -o $(NAME)
+run: all
+	./$(NAME) maps/valid_map.cub

@@ -1,57 +1,97 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: cerdelen <cerdelen@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/14 15:28:56 by cerdelen          #+#    #+#             */
-/*   Updated: 2022/05/15 22:04:37 by cerdelen         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "../includes/cub.h"
 
-#include "../includes/cube3d.h"
-
-char	**testing_map(void)
+void	cleanup(t_data *data)
 {
-	char **map;
-	char *line;
-	int		i;
+	if (data->img.img != NULL)
+		mlx_destroy_image(data->mlx, data->img.img);  // this segfaults if i press the red x
+	if (data->mlx_win != NULL)
+		mlx_destroy_window(data->mlx, data->mlx_win);
+}
 
-	i = 0;
+int		closing(int key, t_data* data)
+{
+	// if (key == ESC_KEY)								//patch fix because of segfault if i click red x
+	cleanup(data);
+	exit(0);
+}
 
-	map = calloc(sizeof(char *) , 15);
-	map[0] = ft_strdup("111111111111111");
-	map[1] = ft_strdup("100000000000001");
-	map[2] = ft_strdup("100000000000001");
-	map[3] = ft_strdup("100000011110001");
-	map[4] = ft_strdup("100000011110001");
-	map[5] = ft_strdup("100000011110001");
-	map[6] = ft_strdup("100000000000001");
-	map[7] = ft_strdup("100000000000001");
-	map[8] = ft_strdup("100000000000001");
-	map[9] = ft_strdup("100000000000001");
-	map[10] = ft_strdup("100110000000001");
-	map[11] = ft_strdup("100110000000001");
-	map[12] = ft_strdup("100000000001111");
-	map[13] = ft_strdup("100000000000001");
-	map[14] = ft_strdup("111111111111111");
-	return (map);
+static bool	check_if_move_possible(t_data *data, t_vec res)
+{
+	if (res.x < 0 || res.y < 0 || res.y > data->map_y * 100 || res.x > ft_strlen(data->map[(int)(res.y / 100)]) * 100)
+		return (false);
+	if (data->map[(int)res.y / 100][(int)res.x / 100] == '1')
+		return (false);
+	return (true);
+}
+
+static void		move(t_data *data, int dir)
+{
+	t_vec	tmp;
+	if (dir == MV_FWRD)
+		tmp = vec_add(data->player.pos, data->player.dir);
+	if (dir == MV_BACK)
+		tmp = vec_sub(data->player.pos, data->player.dir);
+	if (dir == MV_RIGHT)
+		tmp = vec_sub(data->player.pos, dir_rotation(data->player.dir, -90));
+	if (dir == MV_LEFT)
+		tmp = vec_sub(data->player.pos, dir_rotation(data->player.dir, 90));
+	if (!check_if_move_possible(data, tmp))
+		return ;
+	data->player.pos = tmp;
+}
+
+static void		change_dir(t_data *data, int dir)
+{
+	data->player.dir = dir_rotation(data->player.dir, ROTATION_ANGLE * dir);
+}
+
+static void	adjust_pos(t_data *data)
+{
+	if (fmod(data->player.pos.x, TILE) < 1)
+		data->player.pos.x += 1;
+	if (fmod(data->player.pos.x, TILE) > 99)
+		data->player.pos.x -= 1;
+	if (fmod(data->player.pos.y, TILE) < 1)
+		data->player.pos.y += 1;
+	if (fmod(data->player.pos.y, TILE) > 99)
+		data->player.pos.y -= 1;
+}
+
+int		keypress(int key, t_data* data)
+{
+	// printf("keypress got: %i\n", key);
+	if (key == W_KEY)
+		move(data, MV_FWRD);
+	if (key == S_KEY)
+		move(data, MV_BACK);
+	if (key == A_KEY)
+		move(data, MV_LEFT);
+	if (key == D_KEY)
+		move(data, MV_RIGHT);
+	if (key == LEFT_KEY)
+		change_dir(data, -1);
+	if (key == RIGHT_KEY)
+		change_dir(data, 1);
+	if (key == ESC_KEY)
+		closing(key, data);
+	adjust_pos(data);
+	render(data);
+	return (0);
 }
 
 int main(int argc, char **argv)
 {
-	t_c3d_data	data;
-	
-	// if (input_map(&data, argc, argv) == false)
-	// 	return (1);
-	data.map = testing_map();
-	data.rows = 15;
-	data.columns = 15;
-	data.p_x = 384;
-	data.p_y = 580;
-	data.p_a = 0;
-	data.p_dx = cos(data.p_a) * m_speed;
-	data.p_dy = sin(data.p_a) * m_speed;
-	cube3d_game(&data);
+	t_data	data;
+
+	// printf("argc == %i\n", argc);
+	init(&data);
+	print_2d_array(data.map,1);
+
+	parsing(argc, argv, &data);
+	mlx_hook(data.mlx_win, ON_KEYDOWN, 1L<<0, keypress, &data);
+	mlx_hook(data.mlx_win, ON_DESTROY, 0, closing, &data);
+	render(&data);
+
+
+	mlx_loop(data.mlx);
 }

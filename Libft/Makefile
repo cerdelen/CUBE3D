@@ -62,24 +62,31 @@ SRCS = 	ft_split.c\
 		ft_lstiter_bonus.c\
 		ft_lstmap_bonus.c\
 		two_d_arrays_utils.c\
+		get_next_line_utils.c\
+		get_next_line.c
 
 OBJS = $(SRCS:.c=.o)
 
-$(NAME): $(OBJS)
-	@$(AR) $(NAME) $(OBJS_B) $(OBJS)
-	@echo "\033[92mLibft successfully compiled!\033[92m"
+GREEN = \033[92m
+RESET = \033[0m
+RED = \033[91m
 
-$(OBJS): 
-	@$(CC) $(CFLAGS) -c $(SRCS)
+%.o: %.c
+	@$(CC) $(FLAGS) -c $< -o $@
+	@echo "$(GREEN).$(RESET)\c"
 
 all: $(NAME)
 
+$(NAME): $(OBJS)
+	@$(AR) $(NAME) $(OBJS)
+	@echo "\n$(GREEN)Libft successfully compiled!$(RESET)"
+
 clean:
-	@$(RM) $(OBJS) $(OBJS_B)
+	@$(RM) $(OBJS)
 
 fclean: clean
 	@$(RM) $(NAME)
-	@echo "\033[91mLibft successfully cleaned!\033[91m"
+	@echo "$(RED)Libft successfully cleaned!$(RESET)"
 
 re: fclean all
 
